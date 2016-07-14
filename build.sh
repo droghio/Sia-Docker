@@ -3,13 +3,13 @@
 echo""
 echo "* Building Sia"
 echo ""
-cd v1a
+cd sia
 docker build --no-cache -t droghio/sia .
 
 echo ""
 echo "* Building Sia Genesis Node"
 echo ""
-cd ../v1-gen
+cd ../sia-gen
 docker build --no-cache -t droghio/sia-gen .
 
 echo ""
