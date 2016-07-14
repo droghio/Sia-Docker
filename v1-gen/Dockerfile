@@ -1,0 +1,3 @@
+FROM golang
+RUN go get -u -tags="dev debug" github.com/droghio/sia/...
+CMD ["siad", "--no-bootstrap"]
