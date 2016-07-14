@@ -1,0 +1,35 @@
+version: '2'
+services:
+  genesis:
+    image: droghio/sia-gen
+    container_name: genesis
+    hostname: genesis
+
+  node:
+    image: droghio/sia
+    depends_on:
+     - echo
+    volumes:
+     - /home/john/nodes_data:/data
+
+  echo:
+    image: echoip
+    networks:
+      default:
+        aliases:
+         - myexternalip.com
+
+  probe:
+    image: weaveworks/scope
+    network_mode: "host"
+    pid: "host"
+    privileged: true
+    logging:
+      driver: none
+    labels:
+      - "works.weave.role=system"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+    command:
+      - "--probe.docker"
+      - "true"
