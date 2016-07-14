@@ -12,11 +12,10 @@
 #     $SIA_ROLE
 #     $SIAD_WALLET_PASSWORD
 
-cp -r /data/consensus ./consensus
-
 case "$SIA_ROLE" in
     "miner")
         cp -r /data/wallets/miners/miner0 ./wallet
+        cp -r /data/consensus ./consensus
         SCRIPT="/data/scripts/miner.sh"
         ;;
 

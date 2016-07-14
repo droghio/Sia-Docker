@@ -20,6 +20,12 @@ docker build --no-cache -t echoip .
 
 cd ../
 
+echo ""
+echo "* Creating data directiory"
+echo ""
+mkdir nodes_data
+mkdir nodes_data/logs
+
 echo "Build Complete!"
 echo ""
 echo "To start nodes run:"

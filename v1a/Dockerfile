@@ -1,4 +1,9 @@
 FROM golang
+
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
+RUN apt-get install -y vim
+RUN apt-get install -y nodejs
+
 RUN go get -u -tags="debug dev" github.com/droghio/sia/...
 ADD bootstrap.sh ./
 CMD ["bash", "bootstrap.sh"]

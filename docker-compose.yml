@@ -10,7 +10,7 @@ services:
     depends_on:
      - echo
     volumes:
-     - /home/john/nodes_data:/data
+     - ./nodes_data:/data
 
   echo:
     image: echoip
