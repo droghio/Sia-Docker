@@ -37,8 +37,14 @@ case "$SIA_ROLE" in
         ;;
 esac
 
-LOG=/data/logs/$SIA_ROLE-`date -u +%s`
+#Very ugly regex to get our primary ip address.
+IP=`ip addr | grep "eth0" | grep "inet" | sed "s/.* \([0-9][0-9]*[.][0-9][0-9]*[.][0-9][0-9]*[.][0-9][0-9]*\).*/\1/g"`
+
+LOG=/data/logs/$SIA_ROLE-$IP-`date -u +%s`
+ERROR_LOG=/data/error/$SIA_ROLE-$IP-`date -u +%s`
+
 echo "Log location is $LOG"
+echo "Error log location is $ERROR_LOG"
 
 # Start siad
 siad --no-bootstrap &>> $LOG &
@@ -57,6 +63,12 @@ waitForSiad
 # Now we are able to issue api calles.
 siac &>> $LOG
 
+# Start the error logging
+SIAD_PID=$!
+export SIAD_PID
+export ERROR_LOG
+bash error_log.sh
+
 #Run specific script.
 if [[ $SCRIPT ]]
 then
@@ -64,7 +76,11 @@ then
 fi
 
 #When done wait for siad to quit.
-wait $!
+trap "kill -SIGTERM $SIAD_PID" SIGTERM SIGINT
+while [[ `ps -c $SIAD_PID | grep "siad"` ]]
+do
+    wait $SIAD_PID
+done
 
 echo `date -u +%s`: Siad quit. >> $LOG
 echo `date -u +%s`: That\'s all folks!
