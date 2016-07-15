@@ -4,6 +4,8 @@ echo "-----------------------------"
 echo "* Building Sia Container"
 echo "-----------------------------"
 echo ""
+cd containers
+
 cd sia
 docker build -t droghio/sia .
 
@@ -52,10 +54,12 @@ else
     echo "Using existing error log directory"
 fi
 
+cd ..
+
 echo ""
 echo "-----------------------------"
 echo "* Build Complete!"
 echo "-----------------------------"
 echo ""
 echo "To start nodes run:"
-echo -e "\tdocker-compose up"
+echo -e "\t./run.sh tests/test_to_run.yml"

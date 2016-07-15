@@ -10,28 +10,28 @@ services:
     depends_on:
      - echo
     volumes:
-     - ./nodes_data:/data
+     - ../nodes_data:/data
 
   node1:
     image: droghio/sia
     depends_on:
      - echo
     volumes:
-     - ./nodes_data:/data
+     - ../nodes_data:/data
 
   node2:
     image: droghio/sia
     depends_on:
      - echo
     volumes:
-     - ./nodes_data:/data
+     - ../nodes_data:/data
 
   node3:
     image: droghio/sia
     depends_on:
      - echo
     volumes:
-     - ./nodes_data:/data
+     - ../nodes_data:/data
 
   echo:
     image: echoip

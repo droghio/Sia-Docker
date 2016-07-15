@@ -5,6 +5,8 @@ RUN apt-get install -y vim
 RUN apt-get install -y nodejs
 
 RUN go get -u -tags="debug dev" github.com/droghio/sia/...
+RUN npm install sia.js
+
 ADD error_log.sh ./
 ADD bootstrap.sh ./
 CMD ["bash", "bootstrap.sh"]

@@ -11,8 +11,14 @@
 # NEEDS ENVIRONMENT VARIABLES
 #     $SIA_ROLE
 #     $SIAD_WALLET_PASSWORD
+#     $SCRIPT (optional)
 
 case "$SIA_ROLE" in
+    "peer")
+        # Meant as a test to make sure connections can be made.
+        SCRIPT="/data/scripts/peer.js"
+        ;;
+
     "miner")
         cp -r /data/wallets/miners/miner0 ./wallet
         cp -r /data/consensus ./consensus
@@ -72,7 +78,7 @@ bash error_log.sh
 #Run specific script.
 if [[ $SCRIPT ]]
 then
-    bash $SCRIPT
+    $SCRIPT
 fi
 
 #When done wait for siad to quit.
