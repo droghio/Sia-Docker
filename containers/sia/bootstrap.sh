@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Sia Docker Boostrap Script
-#    Bootstraps node for specified role based via SIA_ROLE environment variable.
+#    Bootstraps node for specified role based via ROLE environment variable.
 #    Clones blockchain and specified wallet.
 #
 # John Drogo
@@ -9,14 +9,13 @@
 # Version 1.0
 
 # NEEDS ENVIRONMENT VARIABLES
-#     $SIA_ROLE
+#     $ROLE
 #     $SIAD_WALLET_PASSWORD
 #     $SCRIPT (optional)
 
-case "$SIA_ROLE" in
+case "$ROLE" in
     "peer")
         # Meant as a test to make sure connections can be made.
-        SCRIPT="/data/scripts/peer.js"
         ;;
 
     "miner")
@@ -36,18 +35,18 @@ case "$SIA_ROLE" in
         ;;
     "")
         echo "No role defined"
-        SIA_ROLE="noname"
+        ROLE="noname"
         ;;
     *)
-        echo "Unknow role $SIA_ROLE"
+        echo "Unknow role $ROLE"
         ;;
 esac
 
 #Very ugly regex to get our primary ip address.
 IP=`ip addr | grep "eth0" | grep "inet" | sed "s/.* \([0-9][0-9]*[.][0-9][0-9]*[.][0-9][0-9]*[.][0-9][0-9]*\).*/\1/g"`
 
-LOG=/data/logs/$SIA_ROLE-$IP-`date -u +%s`
-ERROR_LOG=/data/error/$SIA_ROLE-$IP-`date -u +%s`
+LOG=/data/logs/$ROLE-$IP-`date -u +%s`
+ERROR_LOG=/data/error/$ROLE-$IP-`date -u +%s`
 
 echo "Log location is $LOG"
 echo "Error log location is $ERROR_LOG"
