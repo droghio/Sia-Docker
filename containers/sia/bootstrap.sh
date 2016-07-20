@@ -21,17 +21,14 @@ case "$ROLE" in
     "miner")
         cp -r /data/wallets/miners/miner0 ./wallet
         cp -r /data/consensus ./consensus
-        SCRIPT="/data/scripts/miner.sh"
         ;;
 
     "renter")
         cp -r /data/wallets/renters/renter0 ./wallet
-        SCRIPT="/data/scripts/renter.sh"
         ;;
 
     "host")
         cp -r /data/wallets/hosts/host0 ./wallet
-        SCRIPT="/data/scripts/host.sh"
         ;;
     "")
         echo "No role defined"
@@ -78,8 +75,20 @@ bash error_log.sh
 
 if [[ $SCRIPT ]]
 then
-    SIAD_PID=$SIAD_PID $SCRIPT
+    SIAD_PID=$SIAD_PID IP=$IP $SCRIPT
 fi
+
+# Exit if script failed.
+SCRIPT_ERROR=$?
+if [[ $SCRIPT_ERROR -gt 0 ]]
+then
+    echo `date -u +%s`: Shutting down node due to script failing with error $SCRIPT_ERROR
+    if [[ `ps -c $SIAD_PID | grep "siad"` ]]
+    then
+        kill -SIGTERM $SIAD_PID
+    fi
+fi
+
 
 #When done wait for siad to quit.
 trap "kill -SIGTERM $SIAD_PID" SIGTERM SIGINT

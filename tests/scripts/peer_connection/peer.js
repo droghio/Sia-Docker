@@ -17,72 +17,9 @@ const siac=(inputArgs, input) => child.spawnSync("siac", inputArgs||[], { input:
 
 const dns=require("dns")
 
-let errors=0
-const socketPath="/var/run/scope/plugins/peer_connection.sock"
-const http=require("http")
-http.get({
-    socketPath: "/run/docker.sock",
-    path: `/containers/${process.env.HOSTNAME}/json`
-}, (info) => {
-    var body = '';
-    info.on('data', function(d) {
-            body += d;
-        });
-        info.on('end', function() {
-        info = JSON.parse(body)
-        const server = http.createServer((req, res) => {
-        let process_nodes = {}
-        let node_key = info.Id + ";<container>"
-        console.log(`Updated number of errors: ${node_key} has ${errors} errors`)
-        process_nodes=[
-           {
-            id: node_key,
-            'metrics': [
-                {
-                    id: 'test_errors',
-                    'samples': [{
-                        'date': new Date(),
-                        'value': errors,
-                    }]
-                }
-            ] 
-          }
-        ]
-    
-        report = {
-            'Processes': {
-                'nodes': process_nodes,
-                'metric_templates': {
-                    'test_errors': {
-                        'id':       'test_errors',
-                        'label':    'Test Errors',
-                        'priority': 0.1,
-                    }
-                }
-            },
-            'Plugins': [
-                {
-                    'id': 'test_errors',
-                    'label': 'Test Errors',
-                    'description': 'Logs errors for each process',
-                    'interfaces': ['reporter'],
-                    'api_version': '1',
-                }
-            ]
-        }
-        res.write(JSON.stringify(report))
-        res.end();
-    });
-    server.on('clientError', (err, socket) => {
-      socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
-    });
-    server.listen(socketPath)
-})
-})
-
 let baseip = ""
 init = () => {
-    //Lookup base node's ip address.
+    //Lookup base nodes ip address.
     dns.lookup("base", { family: 4 }, (e, ip) => {
         if (e){ throw(e) }
         baseip = ip
@@ -91,12 +28,16 @@ init = () => {
 }
 
 main = () => {
-    console.log(siac(["gateway", "connect", baseip+":9981"]).stderr.toString())
+    //Don't connect to ourselves if we are the base node.
+    if (baseip !== process.env.IP){
+        siac(["gateway", "connect", baseip+":9981"]).stderr.toString()
+    }
     
     let testTimeout = setTimeout(() => {
         clearInterval(testLoop)
         process.exitCode = 1
         console.log("ERROR: Test timed out.")
+        siac(["stop"])
     }, 15000)
 
     let testCountdown = 0 //If we go five iterations with a stable peer we are good.
@@ -123,6 +64,7 @@ main = () => {
                   }
              })
          } catch (e) {
+             siac(["stop"])
              console.log(`ERROR: ${e}`)
              process.exit(2)
              clearInterval(testLoop)
