@@ -45,11 +45,13 @@ IP=`ip addr | grep "eth0" | grep "inet" | sed "s/.* \([0-9][0-9]*[.][0-9][0-9]*[
 LOG=/data/logs/$ROLE-$IP-`date -u +%s`
 ERROR_LOG=/data/error/$ROLE-$IP-`date -u +%s`
 
-echo "Log location is $LOG"
+echo "Sia CLI log location is $LOG"
 echo "Error log location is $ERROR_LOG"
 
 # Start siad
 siad --no-bootstrap &>> $LOG &
+
+#TODO: Fix problem is siad quits before registering a success.
 
 function waitForSiad {
     while [[ `siac 2>&1` == "Could not get current consensus state: no response from daemon" ]]
@@ -67,14 +69,13 @@ siac &>> $LOG
 
 # Start the error logging
 SIAD_PID=$!
-export SIAD_PID
-export ERROR_LOG
-bash error_log.sh
+SIAD_PID=$SIAD_PID bash error_log.sh | tee -a $ERROR_LOG &
 
 #Run specific script.
 
 if [[ $SCRIPT ]]
 then
+    echo "Running script: $SCRIPT"
     SIAD_PID=$SIAD_PID IP=$IP $SCRIPT
 fi
 
@@ -82,19 +83,19 @@ fi
 SCRIPT_ERROR=$?
 if [[ $SCRIPT_ERROR -gt 0 ]]
 then
-    echo `date -u +%s`: Shutting down node due to script failing with error $SCRIPT_ERROR
+    echo `date -u +%s`: Pausing node due to script failing with error $SCRIPT_ERROR
     if [[ `ps -c $SIAD_PID | grep "siad"` ]]
     then
         kill -SIGTERM $SIAD_PID
-
-        # Enter a debug wait loop.
-        DEBUG_LOOP=1
-        trap "DEBUG_LOOP=0" SIGTERM SIGINT
-        while [[ $DEBUG_LOOP ]]
-        do
-            sleep 5
-        done
     fi
+
+    # Enter a debug wait loop.
+    DEBUG_LOOP=1
+    trap "DEBUG_LOOP=0" SIGTERM SIGINT
+    while [[ $DEBUG_LOOP ]]
+    do
+        sleep 5
+    done
 fi
 
 

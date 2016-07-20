@@ -2,7 +2,15 @@
 
 # Basic wrapper to coordinate test launching.
 
-TEST=$1
+if [[ $1  ]]
+then
+    TEST=$1
+else
+    echo "Please specify a docker-compose file to run."
+    echo "Usage:"
+    echo -e "\t./run.sh test-file-to-run.yml"
+    exit 1
+fi
 
 echo "-----------------------------------------"
 echo "* Running test $TEST, use Ctrl-C to quit..."
