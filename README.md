@@ -6,8 +6,8 @@ To use download the source code, enter the downloaded directory and run:
 
 ````
 ./build.sh
-docker-compose up &
+./run.sh tests/peer_connection.yml
 ````
 
-To shutdown the network run `docker-compose down` in the same directory as the `docker-compose.yml` file.
+To shutdown the network press `Ctrl-C`. The run script will automatically shutdown all the nodes.
 You can access the WeaveScope instance on `localhost:4040` for web browser based debugging.
