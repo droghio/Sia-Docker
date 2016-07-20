@@ -16,6 +16,7 @@ services:
     volumes:
      - ../nodes_data:/data
      - ./scripts/peer_connection/:/scripts
+     - /var/run/:/var/run/:rw
 
   echo:
     image: echoip
@@ -29,12 +30,10 @@ services:
     network_mode: "host"
     pid: "host"
     privileged: true
-    logging:
-      driver: none
     labels:
       - "works.weave.role=system"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      - "/var/run/:/var/run/:rw"
     command:
       - "--probe.docker"
       - "true"

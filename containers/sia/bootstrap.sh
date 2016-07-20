@@ -75,9 +75,10 @@ export ERROR_LOG
 bash error_log.sh
 
 #Run specific script.
+
 if [[ $SCRIPT ]]
 then
-    $SCRIPT
+    SIAD_PID=$SIAD_PID $SCRIPT
 fi
 
 #When done wait for siad to quit.

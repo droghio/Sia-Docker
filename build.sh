@@ -29,7 +29,7 @@ cd ../
 
 echo ""
 echo "-----------------------------"
-echo "* Creating Data Directiory"
+echo "* Creating Data Directiories"
 echo "-----------------------------"
 echo ""
 stat nodes_data &> /dev/null
@@ -52,6 +52,15 @@ then
     mkdir nodes_data/error
 else
     echo "Using existing error log directory"
+fi
+
+stat /var/run/scope/plugins &> /dev/null
+if [[ $? == 1 ]]
+then
+    mkdir /var/run/scope
+    mkdir /var/run/scope/plugins
+else
+    echo "Using existing plugins directory"
 fi
 
 cd ..
