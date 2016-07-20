@@ -1,7 +1,7 @@
 version: '2'
 services:
   base:
-    image: droghio/sia
+    image: droghio/sia-test
     hostname: genesis
     environment:
       ROLE: "peer"

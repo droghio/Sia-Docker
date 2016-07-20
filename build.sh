@@ -27,6 +27,14 @@ docker build $ARGS -t droghio/sia .
 
 echo ""
 echo "-----------------------------"
+echo "* Building Sia Test Container"
+echo "-----------------------------"
+echo""
+cd ../sia-test
+docker build $ARGS -t droghio/sia-test .
+
+echo ""
+echo "-----------------------------"
 echo "* Building Sia Genesis Container"
 echo "-----------------------------"
 echo""

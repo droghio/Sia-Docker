@@ -86,15 +86,15 @@ then
     if [[ `ps -c $SIAD_PID | grep "siad"` ]]
     then
         kill -SIGTERM $SIAD_PID
-    fi
 
-    # Enter a debug wait loop.
-    DEBUG_LOOP=1
-    trap "DEBUG_LOOP=0" SIGTERM SIGINT
-    while [[ $DEBUG_LOOP ]]
-    do
-        sleep 5
-    done
+        # Enter a debug wait loop.
+        DEBUG_LOOP=1
+        trap "DEBUG_LOOP=0" SIGTERM SIGINT
+        while [[ $DEBUG_LOOP ]]
+        do
+            sleep 5
+        done
+    fi
 fi
 
 

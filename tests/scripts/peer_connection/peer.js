@@ -38,38 +38,43 @@ main = () => {
         process.exitCode = 1
         console.log("ERROR: Test timed out.")
         siac(["stop"])
-    }, 15000)
+    }, 100000)
 
-    let testCountdown = 0 //If we go five iterations with a stable peer we are good.
+    let testCooldown = 0 //If we go five iterations with a stable peer we are good.
     let testLoop = setInterval(() => {
-         try {
-             siad.call("/gateway", (e, gateway) => {
-                 console.log(gateway)
-                 if (gateway.peers.length>=1){
-                     siad.call("/consensus", (e, consensus) => {
-                         if (consensus.synced === true){
-                             testCooldown++
-                             if (testCooldown==5){
-                                 console.log("Test complete. Peer synced and connected to base.")
-                                 //Process is return success.
-                             } else {
-                                 console.log(`WARN: Consensus not synced: ${consensus}`)
-                                 testCountdown = 0
-                             }
-                         } else {
-                             console.log(`WARN: Insufficent number of peers: ${gateway.peers}`)
-                             testCountdown = 0
-                         }
-                     })
-                  }
-             })
-         } catch (e) {
-             siac(["stop"])
-             console.log(`ERROR: ${e}`)
-             process.exit(2)
-             clearInterval(testLoop)
-             clearTimeout(testTimeout) 
-         }
+        try {
+            siad.call("/gateway", (e, gateway) => {
+                console.log(gateway)
+                if (gateway.peers.length>=1){
+                    siad.call("/consensus", (e, consensus) => {
+                        if (consensus.synced === true){
+                            testCooldown++
+                            if (testCooldown==5){
+                                const date = Math.round((new Date()).getTime()/1000)
+                                console.log(`${date} SUCCESS: Test complete. Peer synced and connected to base!`)
+                                clearInterval(testLoop)
+                                clearTimeout(testTimeout)
+                                //Process is return success.
+                            } else {
+                                console.log(`SYNC: Have peer and synced: Cooldown ${testCooldown}`)
+                            }
+                        } else {
+                            console.log(`WARN: Consensus not synced: ${JSON.stringify(consensus)}`)
+                            testCountdown = 0
+                        }
+                    })
+                } else {
+                    console.log(`Insufficient number of peers: ${gateway.peers.length}`)
+                    testCooldown = 0
+                } 
+            })
+        } catch (e) {
+            siac(["stop"])
+            console.log(`ERROR: ${e}`)
+            clearInterval(testLoop)
+            clearTimeout(testTimeout) 
+            process.exit(2)
+        }
     }, 1000)
  }
 
