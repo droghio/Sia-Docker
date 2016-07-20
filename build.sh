@@ -1,5 +1,21 @@
 #! /bin/bash
 
+case $1 in
+    "--no-cache")
+        ARGS="--no-cache"
+        ;;
+
+    "")
+        ;;
+
+   *)
+       echo Unknown argument: $1
+       echo Usage:
+       echo -e "\t./build.sh [--no-cache]"
+       exit 1
+       ;;
+esac
+
 echo "-----------------------------"
 echo "* Building Sia Container"
 echo "-----------------------------"
@@ -7,7 +23,7 @@ echo ""
 cd containers
 
 cd sia
-docker build -t droghio/sia .
+docker build $ARGS -t droghio/sia .
 
 echo ""
 echo "-----------------------------"
@@ -15,7 +31,7 @@ echo "* Building Sia Genesis Container"
 echo "-----------------------------"
 echo""
 cd ../sia-gen
-docker build -t droghio/sia-gen .
+docker build $ARGS -t droghio/sia-gen .
 
 echo ""
 echo "-----------------------------"
@@ -23,7 +39,7 @@ echo "* Building EchoIP Container"
 echo "-----------------------------"
 echo ""
 cd ../echoip
-docker build -t echoip .
+docker build $ARGS -t echoip .
 
 cd ../
 
